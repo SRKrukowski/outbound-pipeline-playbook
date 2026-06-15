@@ -1,32 +1,38 @@
-# Outbound Pipeline Playbook
+# Outbound Pipeline
 
-A Claude Code skill + install playbook for the AI-assisted outbound workflow described on [The Wise Operator](https://thewiseoperator.com/workflows/outbound-pipeline/). One command kicks off a five-stage pipeline that turns an ICP definition into Gmail drafts, every email reviewed by a human before sending.
+> One ICP definition in, personalized research-backed cold-email drafts out, waiting in your Gmail. One command in Claude Code. Nothing sends until a human clicks Send.
+
+![License](https://img.shields.io/badge/license-MIT-blue) ![Claude Code](https://img.shields.io/badge/Claude%20Code-skill-8A2BE2) ![Python](https://img.shields.io/badge/python-3.10%2B-green)
 
 ```
 ICP spec  ->  Exa research  ->  Apollo enrichment  ->  Claude drafting  ->  Gmail drafts
 ```
 
-## What's in this repo
+Cold outreach is usually one of two bad options: write it by hand (a full day for ten good emails) or pay an agency $3-5K/month for output that still reads like a mail merge. This pipeline does the research, enrichment, and personalization from a single command, and every email lands in Gmail Drafts for you to review and send. No auto-sending, ever.
+
+## Example output
+
+A draft generated from an ICP targeting heads of operations at mid-size manufacturers showing recent hiring activity (illustrative):
 
 ```
-.
-├── playbook.md                          # Read this in Claude Code to install everything
-├── skills/
-│   └── outbound-pipeline/
-│       ├── SKILL.md                     # The runtime skill that executes the pipeline
-│       └── scripts/
-│           ├── run_pipeline.py          # Orchestrator (call this one)
-│           ├── exa_search.py            # Stage 2: discovery
-│           ├── enrich.py                # Stage 3: enrichment
-│           ├── draft.py                 # Stage 4: drafting
-│           └── stage_drafts.py          # Stage 5: Gmail drafts
-├── templates/
-│   └── icp-spec.template.md             # Copy this and fill in your ICP
-├── .env.example                         # Which keys to provision
-└── LICENSE                              # MIT
+Subject: the 3rd ops hire this quarter
+
+Hi Dana,
+
+Saw Lakeside Components has posted three operations roles since
+March, including the new continuous-improvement lead. Usually
+when a plant scales the ops team that fast, the reporting layer
+is the first thing that quietly breaks.
+
+We help manufacturers stand that layer up before it becomes the
+bottleneck. Worth a 15-minute call next week to compare notes?
+
+Scott
 ```
 
-## Install in 60 seconds
+The research signal (the hiring activity) is pulled live by Exa, the contact is verified by Apollo, and the copy is written by Claude against your value proposition. No two drafts are templated.
+
+## Quickstart
 
 ```bash
 git clone https://github.com/SRKrukowski/outbound-pipeline-playbook.git
@@ -34,32 +40,48 @@ cd outbound-pipeline-playbook
 claude
 ```
 
-Then in Claude Code, type:
+Then, inside Claude Code:
 
 ```
 Read playbook.md and walk me through the setup.
 ```
 
-Claude will check prerequisites, ask for missing API keys, install the skill into `~/.claude/skills/outbound-pipeline/`, copy the ICP template into your working directory, and run a dry-run before any real API charges.
+Claude checks prerequisites, collects any missing API keys, installs the skill into `~/.claude/skills/outbound-pipeline/`, drops an ICP template into your working directory, and runs a free dry-run before any paid call happens.
 
-## Prerequisites (you cannot skip these)
+## What you need
 
-- **Anthropic API key** — Claude does the drafting. ~$5-15/mo at typical volume.
-- **Exa API key** — research signals. Free tier covers ~10 searches/day; paid starts at $10/mo.
-- **Apollo.io account** — contact enrichment. Free tier gives 50 credits/mo; paid plans start at $59/mo.
-- **Google Workspace + Gmail API enabled** — drafts staging. Free.
-- **Composio account (optional but recommended)** — handles the OAuth dance for Gmail and Apollo so you don't have to wire raw API clients. Free tier covers personal use.
+| Service | Why | Cost |
+|---|---|---|
+| Anthropic API | Claude writes the drafts | ~$5-15/mo at typical volume |
+| Exa API | live prospect research signals | free tier ~10 searches/day; paid from $10/mo |
+| Apollo.io | verified email + title enrichment | free tier 50 credits/mo; paid from $59/mo |
+| Google Workspace + Gmail API | draft staging | free |
+| Composio (optional) | handles Gmail + Apollo OAuth for you | free tier covers personal use |
 
-If any of these are missing, the playbook walkthrough will pause and tell you which one to set up before continuing.
+The walkthrough pauses and tells you exactly what to provision if anything is missing.
 
-## Why this exists
+## How it works
 
-Cold outbound done well needs fresh research, real enrichment, and personalization that doesn't read like a template. Doing it by hand for ten prospects is a full day. Hiring an agency burns $3-5K/month and still produces templated output. This pipeline replaces that with a single command, but every email enters Gmail as a draft. Nothing sends until a human reads it and clicks Send.
+```
+1. Parse     read your ICP spec, normalize to a query plan
+2. Discover  Exa surfaces prospects matching your intent signal
+3. Enrich    Apollo adds verified email + decision-maker title
+4. Draft     Claude writes each email against your value prop
+5. Stage     drafts land in Gmail, never sent automatically
+```
+
+Full design rationale for each stage lives in [`playbook.md`](./playbook.md).
+
+## Safety
+
+- Never auto-sends. Drafts only. You review and click Send.
+- Defaults to a free dry-run; the first paid run is opt-in.
+- Stops and names the missing key rather than inventing a fallback.
 
 ## License
 
-MIT. Use it, fork it, build on it. Attribution to The Wise Operator appreciated but not required.
+MIT. Use it, fork it, build on it.
 
 ## Author
 
-Built by [Scott Krukowski](https://www.scottkrukowski.com), editor of [The Wise Operator](https://thewiseoperator.com). Questions or improvements: scott@thewiseoperator.com.
+Built by [Scott Krukowski](https://www.scottkrukowski.com). Design notes and the full write-up are at [The Wise Operator](https://thewiseoperator.com).
